@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Campus Lost & Found</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav>
+        <b>Campus Lost & Found</b>
+        <a href="/admin">Admin Login</a>
+    </nav>
+
+    <div class="container">
+        <h1>Find Your Item</h1>
+        <input type="text" id="search" placeholder="Search (e.g. 'bottle')..." onkeyup="renderItems()">
+        
+        <div id="item-list" class="grid"></div>
+    </div>
+
+    <script>
+        let allItems = [];
+
+        async function fetchItems() {
+            const res = await fetch('/api/items');
+            allItems = await res.json();
+            renderItems();
+        }
+
+        function renderItems() {
+            const query = document.getElementById('search').value.toLowerCase();
+            const list = document.getElementById('item-list');
+            
+            const filtered = allItems.filter(item => 
+                item.name.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query)
+            );
+
+            list.innerHTML = filtered.map(item => `
+                <div class="card">
+                    <h3>${item.name}</h3>
+                    <p>${item.desc}</p>
+                    <p><b>Location:</b> ${item.loc}</p>
+                    <button onclick="alert('Please visit the Main Office to claim.')">Claim This</button>
+                </div>
+            `).join('');
+        }
+
+        fetchItems();
+    </script>
+</body>
+</html>

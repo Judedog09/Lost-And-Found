@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin - Add Item</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Admin: Post Found Item</h1>
+        <form id="addForm">
+            <input type="text" id="name" placeholder="Item Name (e.g. iPhone)" required>
+            <textarea id="desc" placeholder="Description" required></textarea>
+            <input type="text" id="loc" placeholder="Current Location (Office Room #)" required>
+            <button type="submit">Upload Item</button>
+        </form>
+        <br>
+        <a href="/">← Back to Search</a>
+    </div>
+
+    <script>
+        document.getElementById('addForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const newItem = {
+                name: document.getElementById('name').value,
+                desc: document.getElementById('desc').value,
+                loc: document.getElementById('loc').value
+            };
+
+            await fetch('/api/items', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(newItem)
+            });
+
+            alert('Item added successfully!');
+            window.location.href = '/';
+        };
+    </script>
+</body>
+</html>

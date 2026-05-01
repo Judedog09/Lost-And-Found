@@ -1,0 +1,8 @@
+body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; }
+nav { background: #007bff; color: white; padding: 1rem; display: flex; justify-content: space-between; }
+nav a { color: white; text-decoration: none; border: 1px solid white; padding: 5px 10px; border-radius: 4px; }
+.container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
+.card { background: white; padding: 20px; border-radius: 10px; shadow: 0 4px 6px rgba(0,0,0,0.1); }
+button { background: #28a745; color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; }
