@@ -1,17 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Inter:wght@400;600&display=swap');
 
 :root {
-    --primary: #4f46e5;
-    --primary-hover: #4338ca;
-    --bg-color: #f1f5f9;
-    --surface: #ffffff;
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --danger: #ef4444;
-    --danger-hover: #dc2626;
-    --success: #10b981;
-    --border: #e2e8f0;
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+    /* Albuquerque Academy Theme Colors */
+    --primary: #B30000;       /* Academy Red */
+    --primary-hover: #8A0000; /* Darker Red */
+    --bg-color: #f4f4f5;      
+    --surface: #ffffff;       
+    --text-main: #18181b;     /* Near Black */
+    --text-muted: #52525b;    
+    --danger: #dc2626;        
+    --danger-hover: #b91c1c;
+    --success: #16a34a;
+    --border: #e4e4e7;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
     --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
 }
 
@@ -22,6 +23,11 @@ body {
     background-color: var(--bg-color);
     color: var(--text-main);
     line-height: 1.6;
+}
+
+/* Academy Fonts for Headings */
+h1, h2, h3, .nav-brand {
+    font-family: 'Merriweather', serif;
 }
 
 /* --- NAVIGATION --- */
@@ -35,6 +41,7 @@ nav {
     position: sticky;
     top: 0;
     z-index: 100;
+    border-bottom: 4px solid var(--primary);
 }
 
 .nav-brand { font-size: 1.5rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 10px; }
@@ -47,15 +54,16 @@ nav {
     border-radius: 8px;
     transition: all 0.2s ease;
 }
-.nav-links a:hover, .nav-links a.active { background: var(--bg-color); color: var(--primary); }
+.nav-links a:hover, .nav-links a.active { background: #fef2f2; color: var(--primary); }
 
 /* --- MAIN LAYOUT --- */
 .container { max-width: 1200px; margin: 2rem auto; padding: 0 20px; }
 
 /* --- SEARCH HERO --- */
 .hero {
-    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
-    border-radius: 20px;
+    background: linear-gradient(135deg, #18181b 0%, #27272a 100%);
+    border-top: 5px solid var(--primary);
+    border-radius: 12px;
     padding: 4rem 2rem;
     text-align: center;
     color: white;
@@ -63,7 +71,7 @@ nav {
     box-shadow: var(--shadow-lg);
 }
 .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
-.hero p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 2rem; }
+.hero p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 2rem; font-family: 'Inter', sans-serif;}
 
 .search-wrapper {
     max-width: 600px;
@@ -94,7 +102,7 @@ nav {
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
 .card {
     background: var(--surface);
-    border-radius: 16px;
+    border-radius: 12px;
     padding: 24px;
     box-shadow: var(--shadow-sm);
     transition: all 0.3s ease;
@@ -104,7 +112,7 @@ nav {
 }
 .card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
 .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-.badge { background: #dbeafe; color: #1e40af; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+.badge { background: #fef2f2; color: var(--primary); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; border: 1px solid #fca5a5; }
 .card h3 { font-size: 1.4rem; color: var(--text-main); margin-bottom: 10px; }
 .card p { color: var(--text-muted); margin-bottom: 20px; flex-grow: 1; }
 .card-footer { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 600; color: var(--text-main); margin-bottom: 20px; }
@@ -122,7 +130,7 @@ nav {
 .admin-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; }
 @media (max-width: 800px) { .admin-layout { grid-template-columns: 1fr; } }
 
-.panel { background: var(--surface); padding: 30px; border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
+.panel { background: var(--surface); padding: 30px; border-radius: 12px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
 .panel h2 { margin-bottom: 20px; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
 
 /* Forms */
@@ -138,7 +146,7 @@ nav {
 table { width: 100%; border-collapse: collapse; }
 th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border); }
 th { background: var(--bg-color); font-weight: 600; color: var(--text-muted); }
-tr:hover { background: #f8fafc; }
+tr:hover { background: #fafafa; }
 
 /* --- CUSTOM TOAST NOTIFICATIONS --- */
 #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }

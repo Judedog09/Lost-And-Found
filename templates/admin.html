@@ -8,10 +8,10 @@
 </head>
 <body>
     <nav>
-        <div class="nav-brand"><i class="fa-solid fa-box-open"></i> Campus Finder</div>
+        <div class="nav-brand"><i class="fa-solid fa-box-open"></i> Academy Finder</div>
         <div class="nav-links">
             <a href="/"><i class="fa-solid fa-magnifying-glass"></i> Search</a>
-            <a href="/admin" class="active"><i class="fa-solid fa-shield-halved"></i> Admin</a>
+            <a href="/logout" style="color: #dc2626;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
         </div>
     </nav>
 
@@ -75,14 +75,14 @@
                 const tbody = document.getElementById('inventory-table');
                 
                 if (items.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: #64748b;">Database is empty.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: #52525b;">Database is empty.</td></tr>`;
                     return;
                 }
 
                 tbody.innerHTML = items.map(item => `
                     <tr>
                         <td style="font-weight: 600;">${item.name}</td>
-                        <td><span style="background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">${item.location}</span></td>
+                        <td><span style="background: #f4f4f5; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">${item.location}</span></td>
                         <td>
                             <button class="btn btn-danger" onclick="deleteItem(${item.id})">
                                 <i class="fa-solid fa-trash"></i> Remove
@@ -112,7 +112,7 @@
             
             document.getElementById('adminForm').reset();
             showToast("Item successfully added to database!");
-            loadAdminTable(); // Refresh table immediately
+            loadAdminTable(); 
         };
 
         // Handle Deletion (When student claims item)
@@ -120,11 +120,10 @@
             if(confirm("Are you sure? This action cannot be undone.")) {
                 await fetch(`/api/items/${id}`, { method: 'DELETE' });
                 showToast("Item removed from database.");
-                loadAdminTable(); // Refresh table immediately
+                loadAdminTable(); 
             }
         }
 
-        // Load table on page start
         loadAdminTable();
     </script>
 </body>
