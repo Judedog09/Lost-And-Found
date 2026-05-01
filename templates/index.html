@@ -42,41 +42,45 @@
         }
 
         async function loadItems() {
-            const response = await fetch('/api/items');
-            const items = await response.json();
-            const term = document.getElementById('search').value.toLowerCase();
-            const list = document.getElementById('item-list');
-            
-            const filtered = items.filter(i => 
-                i.name.toLowerCase().includes(term) || 
-                i.description.toLowerCase().includes(term)
-            );
+            try {
+                const response = await fetch('/api/items');
+                const items = await response.json();
+                const term = document.getElementById('search').value.toLowerCase();
+                const list = document.getElementById('item-list');
+                
+                const filtered = items.filter(i => 
+                    i.name.toLowerCase().includes(term) || 
+                    i.description.toLowerCase().includes(term)
+                );
 
-            if (filtered.length === 0) {
-                list.innerHTML = `<div style="text-align:center; grid-column: 1/-1; color: #64748b; padding: 3rem;">
-                    <i class="fa-solid fa-ghost fa-3x" style="margin-bottom: 1rem;"></i>
-                    <h3>No items found matching "${term}"</h3>
-                </div>`;
-                return;
+                if (filtered.length === 0) {
+                    list.innerHTML = `<div style="text-align:center; grid-column: 1/-1; color: #64748b; padding: 3rem;">
+                        <i class="fa-solid fa-ghost fa-3x" style="margin-bottom: 1rem;"></i>
+                        <h3>No items found matching "${term}"</h3>
+                    </div>`;
+                    return;
+                }
+
+                list.innerHTML = filtered.map(item => `
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="badge">Found Item</span>
+                            <i class="fa-solid fa-clock-rotate-left" style="color: #cbd5e1;"></i>
+                        </div>
+                        <h3>${item.name}</h3>
+                        <p>${item.description}</p>
+                        <div class="card-footer">
+                            <i class="fa-solid fa-location-dot" style="color: #ef4444;"></i>
+                            <span>Located at: ${item.location}</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="showToast('Please visit ${item.location} with your Student ID to claim this item.')">
+                            Claim Item
+                        </button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error("Error loading items:", error);
             }
-
-            list.innerHTML = filtered.map(item => `
-                <div class="card">
-                    <div class="card-header">
-                        <span class="badge">Found Item</span>
-                        <i class="fa-solid fa-clock-rotate-left" style="color: #cbd5e1;"></i>
-                    </div>
-                    <h3>${item.name}</h3>
-                    <p>${item.description}</p>
-                    <div class="card-footer">
-                        <i class="fa-solid fa-location-dot" style="color: #ef4444;"></i>
-                        <span>Located at: ${item.location}</span>
-                    </div>
-                    <button class="btn btn-primary" onclick="showToast('Please visit ${item.location} with your Student ID to claim this item.')">
-                        Claim Item
-                    </button>
-                </div>
-            `).join('');
         }
         
         loadItems();
