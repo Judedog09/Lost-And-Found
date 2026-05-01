@@ -1,50 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Campus Lost & Found</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <title>Campus Finder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <nav>
-        <b>Campus Lost & Found</b>
-        <a href="/admin">Admin Login</a>
+        <div class="nav-brand"><i class="fa-solid fa-box-open"></i> Campus Finder</div>
+        <div class="nav-links">
+            <a href="/" class="active"><i class="fa-solid fa-magnifying-glass"></i> Search</a>
+            <a href="/admin"><i class="fa-solid fa-shield-halved"></i> Admin</a>
+        </div>
     </nav>
 
     <div class="container">
-        <h1>Find Your Item</h1>
-        <input type="text" id="search" placeholder="Search (e.g. 'bottle')..." onkeyup="renderItems()">
-        
-        <div id="item-list" class="grid"></div>
+        <div class="hero">
+            <h1>Lost Something?</h1>
+            <p>Search our campus database to see if it's been turned in.</p>
+            <div class="search-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search" placeholder="Type 'keys', 'phone', or 'backpack'..." onkeyup="loadItems()">
+            </div>
+        </div>
+
+        <div id="item-list" class="grid">
+            </div>
     </div>
 
-    <script>
-        let allItems = [];
+    <div id="toast-container"></div>
 
-        async function fetchItems() {
-            const res = await fetch('/api/items');
-            allItems = await res.json();
-            renderItems();
+    <script>
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${msg}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
 
-        function renderItems() {
-            const query = document.getElementById('search').value.toLowerCase();
+        async function loadItems() {
+            const response = await fetch('/api/items');
+            const items = await response.json();
+            const term = document.getElementById('search').value.toLowerCase();
             const list = document.getElementById('item-list');
             
-            const filtered = allItems.filter(item => 
-                item.name.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query)
+            const filtered = items.filter(i => 
+                i.name.toLowerCase().includes(term) || 
+                i.description.toLowerCase().includes(term)
             );
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<div style="text-align:center; grid-column: 1/-1; color: #64748b; padding: 3rem;">
+                    <i class="fa-solid fa-ghost fa-3x" style="margin-bottom: 1rem;"></i>
+                    <h3>No items found matching "${term}"</h3>
+                </div>`;
+                return;
+            }
 
             list.innerHTML = filtered.map(item => `
                 <div class="card">
+                    <div class="card-header">
+                        <span class="badge">Found Item</span>
+                        <i class="fa-solid fa-clock-rotate-left" style="color: #cbd5e1;"></i>
+                    </div>
                     <h3>${item.name}</h3>
-                    <p>${item.desc}</p>
-                    <p><b>Location:</b> ${item.loc}</p>
-                    <button onclick="alert('Please visit the Main Office to claim.')">Claim This</button>
+                    <p>${item.description}</p>
+                    <div class="card-footer">
+                        <i class="fa-solid fa-location-dot" style="color: #ef4444;"></i>
+                        <span>Located at: ${item.location}</span>
+                    </div>
+                    <button class="btn btn-primary" onclick="showToast('Please visit ${item.location} with your Student ID to claim this item.')">
+                        Claim Item
+                    </button>
                 </div>
             `).join('');
         }
-
-        fetchItems();
+        
+        loadItems();
     </script>
 </body>
 </html>

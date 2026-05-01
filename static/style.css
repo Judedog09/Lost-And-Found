@@ -1,8 +1,146 @@
-body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; }
-nav { background: #007bff; color: white; padding: 1rem; display: flex; justify-content: space-between; }
-nav a { color: white; text-decoration: none; border: 1px solid white; padding: 5px 10px; border-radius: 4px; }
-.container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
-input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
-.card { background: white; padding: 20px; border-radius: 10px; shadow: 0 4px 6px rgba(0,0,0,0.1); }
-button { background: #28a745; color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+:root {
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --bg-color: #f1f5f9;
+    --surface: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --danger: #ef4444;
+    --danger-hover: #dc2626;
+    --success: #10b981;
+    --border: #e2e8f0;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+/* --- NAVIGATION --- */
+nav {
+    background: var(--surface);
+    padding: 1rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-brand { font-size: 1.5rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+.nav-links { display: flex; gap: 20px; }
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+.nav-links a:hover, .nav-links a.active { background: var(--bg-color); color: var(--primary); }
+
+/* --- MAIN LAYOUT --- */
+.container { max-width: 1200px; margin: 2rem auto; padding: 0 20px; }
+
+/* --- SEARCH HERO --- */
+.hero {
+    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+    border-radius: 20px;
+    padding: 4rem 2rem;
+    text-align: center;
+    color: white;
+    margin-bottom: 3rem;
+    box-shadow: var(--shadow-lg);
+}
+.hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+.hero p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 2rem; }
+
+.search-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+}
+.search-wrapper input {
+    width: 100%;
+    padding: 20px 20px 20px 50px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 50px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    outline: none;
+    transition: transform 0.2s;
+}
+.search-wrapper input:focus { transform: scale(1.02); }
+.search-wrapper i {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 1.2rem;
+}
+
+/* --- CARDS GRID (Student View) --- */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
+.card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+}
+.card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+.card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+.badge { background: #dbeafe; color: #1e40af; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+.card h3 { font-size: 1.4rem; color: var(--text-main); margin-bottom: 10px; }
+.card p { color: var(--text-muted); margin-bottom: 20px; flex-grow: 1; }
+.card-footer { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 600; color: var(--text-main); margin-bottom: 20px; }
+
+/* --- BUTTONS --- */
+.btn {
+    width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s;
+}
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-danger { background: var(--danger); color: white; width: auto; padding: 8px 16px; font-size: 0.9rem; }
+.btn-danger:hover { background: var(--danger-hover); }
+
+/* --- ADMIN DASHBOARD LAYOUT --- */
+.admin-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; }
+@media (max-width: 800px) { .admin-layout { grid-template-columns: 1fr; } }
+
+.panel { background: var(--surface); padding: 30px; border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
+.panel h2 { margin-bottom: 20px; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+
+/* Forms */
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-main); }
+.form-group input, .form-group textarea {
+    width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 1rem; outline: none; transition: 0.2s;
+}
+.form-group input:focus, .form-group textarea:focus { border-color: var(--primary); }
+
+/* Admin Table */
+.table-container { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border); }
+th { background: var(--bg-color); font-weight: 600; color: var(--text-muted); }
+tr:hover { background: #f8fafc; }
+
+/* --- CUSTOM TOAST NOTIFICATIONS --- */
+#toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
+.toast { background: var(--text-main); color: white; padding: 15px 25px; border-radius: 8px; font-weight: 600; box-shadow: var(--shadow-lg); animation: slideIn 0.3s ease forwards; }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
