@@ -113,6 +113,7 @@ nav {
 .card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
 .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
 .badge { background: #fef2f2; color: var(--primary); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; border: 1px solid #fca5a5; }
+.badge-claimed { background: #fffbeb; color: #b45309; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; border: 1px solid #fcd34d; }
 .card h3 { font-size: 1.4rem; color: var(--text-main); margin-bottom: 10px; }
 .card p { color: var(--text-muted); margin-bottom: 20px; flex-grow: 1; }
 .card-footer { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 600; color: var(--text-main); margin-bottom: 20px; }
@@ -141,12 +142,40 @@ nav {
 }
 .form-group input:focus, .form-group textarea:focus { border-color: var(--primary); }
 
+/* Admin Table Controls */
+.table-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 10px; flex-wrap: wrap; }
+.filter-btns { display: flex; gap: 6px; }
+.filter-btn { background: var(--bg-color); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 0.85rem; font-weight: 600; cursor: pointer; color: var(--text-muted); transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+.filter-btn.active { background: #fef2f2; color: var(--primary); border-color: #fca5a5; }
+.filter-count { background: var(--border); border-radius: 10px; padding: 1px 7px; font-size: 0.75rem; }
+.filter-btn.active .filter-count { background: #fca5a5; color: var(--primary); }
+.sort-btn { background: var(--bg-color); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 0.85rem; font-weight: 600; cursor: pointer; color: var(--text-muted); transition: 0.2s; white-space: nowrap; }
+.sort-btn:hover { border-color: var(--primary); color: var(--primary); }
+
 /* Admin Table */
 .table-container { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; }
 th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border); }
 th { background: var(--bg-color); font-weight: 600; color: var(--text-muted); }
 tr:hover { background: #fafafa; }
+
+/* Mobile: table becomes cards */
+@media (max-width: 600px) {
+    .table-container thead { display: none; }
+    .table-container table { border: none; }
+    .table-container tr { display: block; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; background: white; }
+    .table-container tr:hover { background: white; }
+    .table-container td { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    .table-container td:last-child { border-bottom: none; }
+    .table-container td::before { content: attr(data-label); font-weight: 600; color: var(--text-muted); font-size: 0.78rem; margin-right: 10px; white-space: nowrap; }
+    .filter-btns { gap: 4px; }
+    .filter-btn { padding: 5px 10px; font-size: 0.78rem; }
+}
+
+/* --- MODAL --- */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 500; display: flex; align-items: center; justify-content: center; }
+.modal { background: white; border-radius: 12px; padding: 32px; max-width: 420px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+.modal h3 { margin-bottom: 12px; color: var(--text-main); }
 
 /* --- CUSTOM TOAST NOTIFICATIONS --- */
 #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }

@@ -16,7 +16,7 @@
     </nav>
 
     <div class="container admin-layout">
-        
+
         <div class="panel">
             <h2><i class="fa-solid fa-cloud-arrow-up"></i> Log New Item</h2>
             <form id="adminForm">
@@ -38,17 +38,29 @@
 
         <div class="panel">
             <h2><i class="fa-solid fa-boxes-stacked"></i> Current Inventory</h2>
+
+            <div class="table-controls">
+                <div class="filter-btns">
+                    <button class="filter-btn active" onclick="setFilter('all')">All <span id="count-all" class="filter-count">0</span></button>
+                    <button class="filter-btn" onclick="setFilter('available')">Available <span id="count-available" class="filter-count">0</span></button>
+                    <button class="filter-btn" onclick="setFilter('claimed')">Claimed <span id="count-claimed" class="filter-count">0</span></button>
+                </div>
+                <button class="sort-btn" onclick="toggleSort()">
+                    <i class="fa-solid fa-arrow-up-wide-short"></i> <span id="sort-label">Newest</span>
+                </button>
+            </div>
+
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>Item Name</th>
                             <th>Location</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody id="inventory-table">
-                        </tbody>
+                    <tbody id="inventory-table"></tbody>
                 </table>
             </div>
         </div>
@@ -58,6 +70,10 @@
     <div id="toast-container"></div>
 
     <script>
+        let allItems = [];
+        let currentFilter = 'all';
+        let sortNewest = true;
+
         function showToast(msg) {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -67,35 +83,83 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // Fetch and Display Inventory Table
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.filter-btn').classList.add('active');
+            renderTable();
+        }
+
+        function toggleSort() {
+            sortNewest = !sortNewest;
+            document.getElementById('sort-label').textContent = sortNewest ? 'Newest' : 'Oldest';
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('inventory-table');
+
+            let filtered = allItems.filter(item => {
+                if (currentFilter === 'available') return item.status !== 'Claimed';
+                if (currentFilter === 'claimed') return item.status === 'Claimed';
+                return true;
+            });
+
+            filtered.sort((a, b) => {
+                const da = a.date_added || '0000-00-00';
+                const db = b.date_added || '0000-00-00';
+                return sortNewest ? db.localeCompare(da) : da.localeCompare(db);
+            });
+
+            document.getElementById('count-all').textContent = allItems.length;
+            document.getElementById('count-available').textContent = allItems.filter(i => i.status !== 'Claimed').length;
+            document.getElementById('count-claimed').textContent = allItems.filter(i => i.status === 'Claimed').length;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: #52525b;">No items match this filter.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(item => {
+                const isClaimed = item.status === 'Claimed';
+                const date = item.date_added
+                    ? new Date(item.date_added + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                    : '—';
+                return `
+                <tr>
+                    <td data-label="Item">
+                        <div style="font-weight: 600;">${item.name}</div>
+                        <div style="font-size: 0.78rem; color: #a1a1aa; margin-top: 2px;"><i class="fa-regular fa-calendar"></i> ${date}</div>
+                    </td>
+                    <td data-label="Location"><span style="background: #f4f4f5; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">${item.location}</span></td>
+                    <td data-label="Status">
+                        ${isClaimed
+                            ? `<div><span style="background:#fffbeb; color:#b45309; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; border: 1px solid #fcd34d;"><i class="fa-solid fa-clock"></i> Claimed</span>
+                               ${item.claimer_name ? `<div style="font-size: 0.78rem; color: #52525b; margin-top: 4px;">by ${item.claimer_name}</div>` : ''}</div>`
+                            : `<span style="background:#fef2f2; color:#B30000; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; border: 1px solid #fca5a5;">Available</span>`}
+                    </td>
+                    <td data-label="Action" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        ${isClaimed ? `<button class="btn" style="width:auto; padding: 8px 14px; font-size: 0.85rem; background:#fffbeb; color:#b45309; border: 1px solid #fcd34d;" onclick="unclaimItem(${item.id})">
+                            <i class="fa-solid fa-rotate-left"></i> Undo Claim
+                        </button>` : ''}
+                        <button class="btn btn-danger" onclick="deleteItem(${item.id})">
+                            <i class="fa-solid fa-trash"></i> Remove
+                        </button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
         async function loadAdminTable() {
             try {
                 const response = await fetch('/api/items');
-                const items = await response.json();
-                const tbody = document.getElementById('inventory-table');
-                
-                if (items.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: #52525b;">Database is empty.</td></tr>`;
-                    return;
-                }
-
-                tbody.innerHTML = items.map(item => `
-                    <tr>
-                        <td style="font-weight: 600;">${item.name}</td>
-                        <td><span style="background: #f4f4f5; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">${item.location}</span></td>
-                        <td>
-                            <button class="btn btn-danger" onclick="deleteItem(${item.id})">
-                                <i class="fa-solid fa-trash"></i> Remove
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
+                allItems = await response.json();
+                renderTable();
             } catch (error) {
                 console.error("Error loading table:", error);
             }
         }
 
-        // Handle Add Submission
         document.getElementById('adminForm').onsubmit = async (e) => {
             e.preventDefault();
             const data = {
@@ -103,24 +167,27 @@
                 description: document.getElementById('desc').value,
                 location: document.getElementById('loc').value
             };
-
             await fetch('/api/items', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(data)
             });
-            
             document.getElementById('adminForm').reset();
             showToast("Item successfully added to database!");
-            loadAdminTable(); 
+            loadAdminTable();
         };
 
-        // Handle Deletion (When student claims item)
+        async function unclaimItem(id) {
+            await fetch(`/api/items/${id}/unclaim`, { method: 'PATCH' });
+            showToast("Claim removed — item is available again.");
+            loadAdminTable();
+        }
+
         async function deleteItem(id) {
-            if(confirm("Are you sure? This action cannot be undone.")) {
+            if (confirm("Are you sure? This action cannot be undone.")) {
                 await fetch(`/api/items/${id}`, { method: 'DELETE' });
                 showToast("Item removed from database.");
-                loadAdminTable(); 
+                loadAdminTable();
             }
         }
 

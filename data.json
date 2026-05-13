@@ -4,6 +4,17 @@
         "name": "Airpods",
         "description": "Apple",
         "location": "Admin 67",
-        "status": "Found"
+        "status": "Claimed",
+        "date_added": "2026-05-13",
+        "claimer_name": "Jude Luehring"
+    },
+    {
+        "id": 2,
+        "name": "Pencil",
+        "description": "Yellow",
+        "location": "Admin Building",
+        "status": "Found",
+        "date_added": "2026-05-13",
+        "claimer_name": null
     }
 ]

@@ -25,13 +25,41 @@
             </div>
         </div>
 
-        <div id="item-list" class="grid">
+        <div id="item-list" class="grid"></div>
+    </div>
+
+    <!-- Claim Modal -->
+    <div id="claim-modal" class="modal-backdrop" style="display:none;">
+        <div class="modal">
+            <h3>Claim This Item</h3>
+            <p style="color:#52525b; margin-bottom:20px;">Enter your name so staff know who to expect when you come to pick it up.</p>
+            <div class="form-group" style="margin-bottom:16px;">
+                <input type="text" id="claimer-name" placeholder="Your full name" autocomplete="off">
             </div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-primary" style="flex:1;" onclick="submitClaim()">Confirm Claim</button>
+                <button class="btn" style="flex:1; background:#f4f4f5; color:#52525b;" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
     </div>
 
     <div id="toast-container"></div>
 
     <script>
+        const BLOCKED_WORDS = [
+            "nigger", "nigga", "faggot", "fag", "chink", "spic", "kike", "wetback",
+            "retard", "tranny", "cunt", "whore", "slut", "bitch", "fuck", "shit",
+            "ass", "dick", "cock", "pussy", "bastard", "motherfucker", "twat"
+        ];
+
+        function containsBlockedWord(text) {
+            const normalized = text.toLowerCase().replace(/[^a-z]/g, '');
+            return BLOCKED_WORDS.some(word => normalized.includes(word));
+        }
+
+        let pendingClaimId = null;
+        let pendingClaimLocation = null;
+
         function showToast(msg) {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -41,15 +69,53 @@
             setTimeout(() => toast.remove(), 4000);
         }
 
+        function claimItem(id, location) {
+            pendingClaimId = id;
+            pendingClaimLocation = location;
+            document.getElementById('claimer-name').value = '';
+            document.getElementById('claim-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('claim-modal').style.display = 'none';
+            pendingClaimId = null;
+            pendingClaimLocation = null;
+        }
+
+        async function submitClaim() {
+            const name = document.getElementById('claimer-name').value.trim();
+            if (!name) {
+                showToast('Please enter your name before claiming.');
+                return;
+            }
+            if (containsBlockedWord(name)) {
+                showToast('Please enter a real name.');
+                return;
+            }
+            await fetch(`/api/items/${pendingClaimId}/claim`, {
+                method: 'PATCH',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ claimer_name: name })
+            });
+            closeModal();
+            showToast(`Item claimed! Please visit ${pendingClaimLocation} to pick it up.`);
+            loadItems();
+        }
+
+        // Close modal on backdrop click
+        document.getElementById('claim-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
         async function loadItems() {
             try {
                 const response = await fetch('/api/items');
                 const items = await response.json();
                 const term = document.getElementById('search').value.toLowerCase();
                 const list = document.getElementById('item-list');
-                
-                const filtered = items.filter(i => 
-                    i.name.toLowerCase().includes(term) || 
+
+                const filtered = items.filter(i =>
+                    i.name.toLowerCase().includes(term) ||
                     i.description.toLowerCase().includes(term)
                 );
 
@@ -61,10 +127,14 @@
                     return;
                 }
 
-                list.innerHTML = filtered.map(item => `
+                list.innerHTML = filtered.map(item => {
+                    const isClaimed = item.status === 'Claimed';
+                    return `
                     <div class="card">
                         <div class="card-header">
-                            <span class="badge">Found Item</span>
+                            ${isClaimed
+                                ? `<span class="badge-claimed"><i class="fa-solid fa-clock"></i> Claimed</span>`
+                                : `<span></span>`}
                             <i class="fa-solid fa-clock-rotate-left" style="color: #a1a1aa;"></i>
                         </div>
                         <h3>${item.name}</h3>
@@ -73,16 +143,20 @@
                             <i class="fa-solid fa-location-dot" style="color: #dc2626;"></i>
                             <span>Located at: ${item.location}</span>
                         </div>
-                        <button class="btn btn-primary" onclick="showToast('Please visit ${item.location} to claim this item.')">
-                            Claim Item
-                        </button>
-                    </div>
-                `).join('');
+                        ${isClaimed
+                            ? `<button class="btn" style="background:#e4e4e7; color:#71717a; cursor:not-allowed;" disabled>
+                                <i class="fa-solid fa-check"></i> Already Claimed
+                               </button>`
+                            : `<button class="btn btn-primary" onclick="claimItem(${item.id}, '${item.location}')">
+                                Claim Item
+                               </button>`}
+                    </div>`;
+                }).join('');
             } catch (error) {
                 console.error("Error loading items:", error);
             }
         }
-        
+
         loadItems();
     </script>
 </body>
